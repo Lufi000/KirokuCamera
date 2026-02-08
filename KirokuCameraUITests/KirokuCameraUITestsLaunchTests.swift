@@ -1,13 +1,13 @@
 //
-//  PeachProgressUITestsLaunchTests.swift
-//  PeachProgressUITests
+//  KirokuCameraUITestsLaunchTests.swift
+//  KirokuCameraUITests
 //
 //  Created by yifei lu on 2026/2/2.
 //
 
 import XCTest
 
-final class PeachProgressUITestsLaunchTests: XCTestCase {
+final class KirokuCameraUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

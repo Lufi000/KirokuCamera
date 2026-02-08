@@ -1,14 +1,14 @@
 //
-//  PeachProgressTests.swift
-//  PeachProgressTests
+//  KirokuCameraTests.swift
+//  KirokuCameraTests
 //
 //  Created by yifei lu on 2026/2/2.
 //
 
 import Testing
-@testable import PeachProgress
+@testable import KirokuCamera
 
-struct PeachProgressTests {
+struct KirokuCameraTests {
 
     @Test func example() async throws {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
