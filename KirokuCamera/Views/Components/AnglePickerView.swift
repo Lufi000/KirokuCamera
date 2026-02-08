@@ -92,7 +92,7 @@ struct SubjectPickerView: View {
 
     private var formattedDate: String {
         let f = DateFormatter()
-        f.dateFormat = "yyyy年M月d日"
+        f.dateStyle = .long
         return f.string(from: selectedDate)
     }
 
@@ -205,7 +205,7 @@ struct SubjectPickerView: View {
         let success = await onSave(subject)
         isSaving = false
         if !success {
-            saveErrorMessage = "保存失败，请重试。"
+            saveErrorMessage = String(localized: "保存失败，请重试。")
             showingSaveError = true
         }
     }

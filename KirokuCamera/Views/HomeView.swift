@@ -80,7 +80,7 @@ struct HomeView: View {
     private var deleteConfirmMessage: String {
         guard let subject = subjectToDelete else { return "" }
         let count = dataStore.photoCount(for: subject.id)
-        return "确定要删除「\(subject.name)」吗？\n将同时删除 \(count) 张照片，此操作无法撤销。"
+        return String(localized: "确定要删除「\(subject.name)」吗？\n将同时删除 \(count) 张照片，此操作无法撤销。")
     }
 
     private var emptyStateView: some View {
@@ -250,6 +250,7 @@ struct HomeView: View {
             .clipShape(Circle())
             .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
         }
+        .accessibilityLabel(String(localized: "拍照"))
         .padding(.trailing, 20)
         .padding(.bottom, 20)
     }

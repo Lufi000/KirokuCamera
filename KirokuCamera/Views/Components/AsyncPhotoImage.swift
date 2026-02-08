@@ -49,6 +49,7 @@ struct AsyncPhotoImage: View {
         .task(id: fileName) {
             await loadImage()
         }
+        .accessibilityLabel(String(localized: "照片"))
     }
     
     private func loadImage() async {

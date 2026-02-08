@@ -64,8 +64,8 @@ struct KirokuColors {
     /// 主文字色 - 深灰（不用纯黑）#4A4A4A
     let textPrimary = Color(red: 74/255, green: 74/255, blue: 74/255)
 
-    /// 次要文字色 - 中灰 #8E8E93
-    let textSecondary = Color(red: 142/255, green: 142/255, blue: 147/255)
+    /// 次要文字色 - 深灰 #636366（WCAG AA 对比度 ≥ 5.1:1 on #FAEDD8）
+    let textSecondary = Color(red: 99/255, green: 99/255, blue: 102/255)
 
     // MARK: - 卡片（透明、与背景和谐）
 
@@ -89,7 +89,7 @@ struct KirokuColors {
 struct KirokuButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 17, weight: .semibold, design: .rounded))
+            .font(.system(.body, design: .rounded).weight(.semibold))
             .foregroundStyle(.white)
             .padding(.horizontal, 32)
             .padding(.vertical, 14)
@@ -106,7 +106,7 @@ struct KirokuButtonStyle: ButtonStyle {
 struct KirokuSecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 16, weight: .medium, design: .rounded))
+            .font(.system(.subheadline, design: .rounded).weight(.medium))
             .foregroundStyle(Color.kiroku.primary)
             .padding(.horizontal, 24)
             .padding(.vertical, 12)

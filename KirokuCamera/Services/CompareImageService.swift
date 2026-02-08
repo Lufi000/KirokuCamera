@@ -124,7 +124,7 @@ enum CompareImageService {
                     if success {
                         completion(true, nil)
                     } else {
-                        completion(false, error?.localizedDescription ?? "保存失败")
+                        completion(false, error?.localizedDescription ?? String(localized: "保存失败"))
                     }
                 }
             }
@@ -133,7 +133,7 @@ enum CompareImageService {
             PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
                 DispatchQueue.main.async {
                     guard status == .authorized || status == .limited else {
-                        completion(false, "未获得保存到相册的权限")
+                        completion(false, String(localized: "未获得保存到相册的权限"))
                         return
                     }
                     doSave()
@@ -143,7 +143,7 @@ enum CompareImageService {
             PHPhotoLibrary.requestAuthorization { status in
                 DispatchQueue.main.async {
                     guard status == .authorized else {
-                        completion(false, "未获得保存到相册的权限")
+                        completion(false, String(localized: "未获得保存到相册的权限"))
                         return
                     }
                     doSave()

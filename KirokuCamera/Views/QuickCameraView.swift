@@ -104,10 +104,11 @@ struct QuickCameraView: View {
                     .foregroundStyle(.white)
                     .padding()
             }
+            .accessibilityLabel(String(localized: "关闭"))
             
             Spacer()
             
-            Text(preselectedSubject?.name ?? "拍照")
+            Text(preselectedSubject?.name ?? String(localized: "拍照"))
                 .font(.headline)
                 .foregroundStyle(.white)
             
@@ -122,6 +123,7 @@ struct QuickCameraView: View {
                     .foregroundStyle(.white)
                     .padding()
             }
+            .accessibilityLabel(String(localized: "切换摄像头"))
         }
         .background(Color.black.opacity(0.3))
     }
@@ -235,6 +237,7 @@ struct QuickCameraView: View {
                             .frame(width: 60, height: 60)
                     }
                 }
+                .accessibilityLabel(String(localized: "拍照"))
                 .disabled(!cameraManager.isCameraReady)
                 .opacity(cameraManager.isCameraReady ? 1 : 0.5)
                 
@@ -259,6 +262,7 @@ struct QuickCameraView: View {
                     .font(.title3)
                     .foregroundStyle(showOverlay ? .white : .gray)
             }
+            .accessibilityLabel(showOverlay ? String(localized: "隐藏参考图") : String(localized: "显示参考图"))
             
             Text("参考图")
                 .font(.caption)
@@ -267,6 +271,7 @@ struct QuickCameraView: View {
             // 透明度滑块
             Slider(value: $overlayOpacity, in: 0.1...0.7)
                 .tint(.white)
+                .accessibilityLabel(String(localized: "参考图透明度"))
                 .disabled(!showOverlay)
             
             Text("\(Int(overlayOpacity * 100))%")
@@ -278,11 +283,11 @@ struct QuickCameraView: View {
     }
     
     private var formattedDate: String {
-        let formatter = DateFormatter()
         if Calendar.current.isDateInToday(selectedDate) {
-            return "今天"
+            return String(localized: "今天")
         }
-        formatter.dateFormat = "M月d日"
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
         return formatter.string(from: selectedDate)
     }
     

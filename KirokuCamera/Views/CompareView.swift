@@ -149,6 +149,8 @@ struct CompareView: View {
                 .onTapGesture {
                     selectingForSide = side
                 }
+                .accessibilityLabel(String(localized: "对比照片"))
+                .accessibilityHint(String(localized: "双指缩放或旋转，点击更换照片"))
                 
                 Text(photo.formattedDate)
                     .font(.caption)
@@ -260,19 +262,19 @@ struct CompareView: View {
             await MainActor.run {
                 isSavingCompare = false
                 guard let l = leftImage, let r = rightImage else {
-                    saveCompareAlert = .failure("无法加载照片")
+                    saveCompareAlert = .failure(String(localized: "无法加载照片"))
                     return
                 }
                 let leftTransformed = CompareImageService.transformImage(l, scale: leftScale, angleDegrees: leftAngle, offset: leftOffset)
                 let rightTransformed = CompareImageService.transformImage(r, scale: rightScale, angleDegrees: rightAngle, offset: rightOffset)
                 guard let lt = leftTransformed, let rt = rightTransformed else {
-                    saveCompareAlert = .failure("应用变换失败")
+                    saveCompareAlert = .failure(String(localized: "应用变换失败"))
                     return
                 }
                 let leftLabel = showDateLabels ? "Before \(left.formattedDate)" : nil
                 let rightLabel = showDateLabels ? "After \(right.formattedDate)" : nil
                 guard let composite = CompareImageService.composite(left: lt, right: rt, leftLabel: leftLabel, rightLabel: rightLabel) else {
-                    saveCompareAlert = .failure("生成对比图失败")
+                    saveCompareAlert = .failure(String(localized: "生成对比图失败"))
                     return
                 }
                 previewImage = composite
@@ -312,7 +314,7 @@ struct CompareView: View {
 
     private func savePreviewToLibrary(_ image: UIImage) {
         CompareImageService.saveToPhotoLibrary(image) { success, message in
-            saveCompareAlert = success ? .success : .failure(message ?? "保存失败")
+            saveCompareAlert = success ? .success : .failure(message ?? String(localized: "保存失败"))
         }
     }
 

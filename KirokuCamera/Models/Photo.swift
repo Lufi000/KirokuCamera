@@ -36,7 +36,8 @@ struct Photo: Identifiable, Codable, Equatable {
 
     var detailedDate: String {
         let f = DateFormatter()
-        f.dateFormat = "yyyy年M月d日 HH:mm"
+        f.dateStyle = .medium
+        f.timeStyle = .short
         return f.string(from: takenAt)
     }
 }

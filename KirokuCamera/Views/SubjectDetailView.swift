@@ -64,6 +64,7 @@ struct SubjectDetailView: View {
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(Color.kiroku.primary)
                 }
+                .accessibilityLabel(String(localized: "返回"))
             }
             ToolbarItem(placement: .principal) {
                 Button {
@@ -212,7 +213,7 @@ struct PhotoGridCell: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 if isCover {
                     Text("封面")
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.caption2.weight(.medium))
                         .foregroundStyle(Color.kiroku.textPrimary)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
@@ -270,7 +271,7 @@ struct PhotoTimelineCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                 if isCover {
                     Text("封面")
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.caption2.weight(.medium))
                         .foregroundStyle(Color.kiroku.textPrimary)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)

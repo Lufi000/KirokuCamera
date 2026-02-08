@@ -69,7 +69,7 @@ struct PhotoDetailView: View {
                                     .frame(minHeight: 80)
                                     .scrollContentBackground(.hidden)
                                     .tint(Color.kiroku.primary)
-                                    .onChange(of: noteText) { _, _ in hasNoteChanges = true }
+                                    .onChange(of: noteText) { _ in hasNoteChanges = true }
                             } else {
                                 Button {
                                     noteText = displayedNote
