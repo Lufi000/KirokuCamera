@@ -127,6 +127,16 @@
         }
       }
     },
+    "切换摄像头" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch Camera"
+          }
+        }
+      }
+    },
     "创建并保存" : {
       "localizations" : {
         "en" : {
@@ -167,12 +177,35 @@
         }
       }
     },
+    "加载中…" : {
+
+    },
     "参考图" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reference"
+          }
+        }
+      }
+    },
+    "参考图透明度" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reference Opacity"
+          }
+        }
+      }
+    },
+    "双指缩放或旋转，点击更换照片" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pinch to zoom or rotate, tap to change photo"
           }
         }
       }
@@ -213,6 +246,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Compare"
+          }
+        }
+      }
+    },
+    "对比照片" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparison photo"
+          }
+        }
+      }
+    },
+    "导出效果预览" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Preview"
           }
         }
       }
@@ -258,6 +311,7 @@
       }
     },
     "应用变换失败" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -347,6 +401,26 @@
         }
       }
     },
+    "日期" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        }
+      }
+    },
+    "显示参考图" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Reference"
+          }
+        }
+      }
+    },
     "未获得保存到相册的权限" : {
       "localizations" : {
         "en" : {
@@ -393,6 +467,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tap to add a note"
+          }
+        }
+      }
+    },
+    "照片" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo"
           }
         }
       }
@@ -537,6 +621,16 @@
         }
       }
     },
+    "返回" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
     "还没有照片" : {
       "localizations" : {
         "en" : {
@@ -607,6 +701,16 @@
         }
       }
     },
+    "隐藏参考图" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide Reference"
+          }
+        }
+      }
+    },
     "需要相机权限" : {
       "localizations" : {
         "en" : {
@@ -630,63 +734,10 @@
     "预览" : {
       "localizations" : {
         "en" : {
-          "stringUnit" : { "state" : "translated", "value" : "Preview" }
-        }
-      }
-    },
-    "切换摄像头" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : { "state" : "translated", "value" : "Switch Camera" }
-        }
-      }
-    },
-    "隐藏参考图" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : { "state" : "translated", "value" : "Hide Reference" }
-        }
-      }
-    },
-    "显示参考图" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : { "state" : "translated", "value" : "Show Reference" }
-        }
-      }
-    },
-    "参考图透明度" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : { "state" : "translated", "value" : "Reference Opacity" }
-        }
-      }
-    },
-    "返回" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : { "state" : "translated", "value" : "Back" }
-        }
-      }
-    },
-    "照片" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : { "state" : "translated", "value" : "Photo" }
-        }
-      }
-    },
-    "对比照片" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : { "state" : "translated", "value" : "Comparison photo" }
-        }
-      }
-    },
-    "双指缩放或旋转，点击更换照片" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : { "state" : "translated", "value" : "Pinch to zoom or rotate, tap to change photo" }
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preview"
+          }
         }
       }
     }

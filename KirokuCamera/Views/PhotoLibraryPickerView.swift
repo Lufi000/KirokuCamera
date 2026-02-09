@@ -103,7 +103,12 @@ struct PhotoLibraryPickerView: View {
                             cellSize: cellSize,
                             isSelected: selectedAsset?.localIdentifier == asset.localIdentifier
                         ) {
-                            selectedAsset = asset
+                            // 再次点击同一张则取消选择
+                            if selectedAsset?.localIdentifier == asset.localIdentifier {
+                                selectedAsset = nil
+                            } else {
+                                selectedAsset = asset
+                            }
                         }
                     }
                 }
@@ -132,7 +137,7 @@ struct PhotoLibraryPickerView: View {
     private func loadAssets() {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        options.fetchLimit = 500
+        // 不设 fetchLimit，加载全部相册照片以便用户能看到完整内容
         let result = PHAsset.fetchAssets(with: .image, options: options)
         var list: [PHAsset] = []
         result.enumerateObjects { asset, _, _ in

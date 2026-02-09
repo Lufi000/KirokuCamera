@@ -28,6 +28,10 @@ struct KirokuCameraApp: App {
     @StateObject private var dataStore = DataStore()
 
     init() {
+        // 窗口背景色：消除启动时 UIWindow 默认黑色
+        let kirokuBg = UIColor(red: 250/255, green: 237/255, blue: 216/255, alpha: 1)
+        UIWindow.appearance().backgroundColor = kirokuBg
+
         let titleColor = UIColor(red: 74/255, green: 74/255, blue: 74/255, alpha: 1.0)
         let appearance = UINavigationBarAppearance()
         appearance.configureWithDefaultBackground()
@@ -50,6 +54,7 @@ struct KirokuCameraApp: App {
             StoryboardRootView()
                 .environmentObject(dataStore)
                 .preferredColorScheme(.light)
+                .background(Color(red: 250/255, green: 237/255, blue: 216/255))
         }
     }
 }

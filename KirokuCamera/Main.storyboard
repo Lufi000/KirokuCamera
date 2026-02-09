@@ -13,6 +13,7 @@
                     <view key="view" contentMode="scaleToFill" id="Home-View">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.98039215686274506" green="0.92941176470588238" blue="0.84705882352941175" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeArea" id="Home-SafeArea"/>
                     </view>
                 </viewController>

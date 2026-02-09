@@ -28,7 +28,15 @@ struct HomeView: View {
                 Color.kiroku.background.ignoresSafeArea()
 
                 Group {
-                    if subjects.isEmpty {
+                    if dataStore.isLoading {
+                        VStack(spacing: 16) {
+                            ProgressView()
+                                .tint(Color.kiroku.primary)
+                            Text("加载中…")
+                                .font(.subheadline)
+                                .foregroundStyle(Color.kiroku.textSecondary)
+                        }
+                    } else if subjects.isEmpty {
                         emptyStateView
                     } else {
                         subjectListView
@@ -287,7 +295,8 @@ struct SubjectGridCell: View {
                 Color.kiroku.cardFill
                 if let cover = dataStore.coverPhoto(for: subject.id) {
                     AsyncPhotoImage.thumbnail(fileName: cover.fileName, size: 200)
-                        .scaledToFit()
+                        .scaledToFill()
+                        .clipped()
                 } else {
                     Image(systemName: "person.crop.circle")
                         .font(.title)

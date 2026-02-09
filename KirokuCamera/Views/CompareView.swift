@@ -28,6 +28,13 @@ struct CompareView: View {
     // 时间信息：保存对比图时是否显示日期（默认显示）
     @State private var showDateLabels: Bool = true
 
+    // 可编辑的日期标签（选照片时从 formattedDate 初始化，用户可自行修改）
+    @State private var leftDateLabel: String = ""
+    @State private var rightDateLabel: String = ""
+
+    // 日期编辑焦点（用 Side? 区分左右，避免两个 TextField 共用 Bool 导致焦点混乱）
+    @FocusState private var editingDateSide: Side?
+
     // 预览再保存
     @State private var previewImage: UIImage?
     
@@ -55,6 +62,7 @@ struct CompareView: View {
                 photoSelector
             }
         }
+        .ignoresSafeArea(.keyboard)
         .overlay(alignment: .leading) {
             Color.clear
                 .frame(width: 24)
@@ -82,11 +90,19 @@ struct CompareView: View {
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("保存") {
+                Button("预览") {
+                    editingDateSide = nil
                     generateAndShowPreview()
                 }
                 .foregroundStyle(canSaveCompare ? Color.kiroku.primary : Color.gray)
                 .disabled(!canSaveCompare || isSavingCompare)
+            }
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("完成") {
+                    editingDateSide = nil
+                }
+                .foregroundStyle(Color.kiroku.primary)
             }
         }
         .alert(item: $saveCompareAlert) { result in
@@ -127,34 +143,53 @@ struct CompareView: View {
 
     /// 单个对比照片视图（支持双指缩放、旋转、平移；点击选中要更换的一侧）
     private func comparePhotoView(photo: Photo?, side: Side, label: String) -> some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 16) {
             if let photo = photo {
                 let scale = side == .left ? $leftScale : $rightScale
                 let angle = side == .left ? $leftAngle : $rightAngle
                 let offset = side == .left ? $leftOffset : $rightOffset
                 ZStack {
-                    EditableCompareImageView(fileName: photo.fileName, scale: scale, angle: angle, offset: offset)
-                        .aspectRatio(3/4, contentMode: .fit)
-                        .frame(maxWidth: .infinity)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(
-                                    selectingForSide == side ? Color.kiroku.primary : Color.clear,
-                                    lineWidth: 3
-                                )
-                        )
+                    EditableCompareImageView(
+                        fileName: photo.fileName,
+                        scale: scale,
+                        angle: angle,
+                        offset: offset,
+                        onHorizontalSwipe: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                swapPhotos()
+                            }
+                        }
+                    )
+                    .aspectRatio(3/4, contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(
+                                selectingForSide == side ? Color.kiroku.primary : Color.clear,
+                                lineWidth: 3
+                            )
+                    )
                 }
                 .contentShape(Rectangle())
-                .onTapGesture {
-                    selectingForSide = side
-                }
+                .simultaneousGesture(
+                    TapGesture().onEnded {
+                        editingDateSide = nil
+                        selectingForSide = side
+                    }
+                )
                 .accessibilityLabel(String(localized: "对比照片"))
                 .accessibilityHint(String(localized: "双指缩放或旋转，点击更换照片"))
                 
-                Text(photo.formattedDate)
-                    .font(.caption)
+                TextField("日期", text: side == .left ? $leftDateLabel : $rightDateLabel)
+                    .font(.system(size: 18, weight: .medium))
                     .foregroundStyle(Color.kiroku.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .focused($editingDateSide, equals: side)
+                    .submitLabel(.done)
+                    .onSubmit { editingDateSide = nil }
+                    .padding(.vertical, 8)
+                    .contentShape(Rectangle())
             } else {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.kiroku.cardFill)
@@ -252,45 +287,68 @@ struct CompareView: View {
         }
     }
 
-    /// 生成预览图并弹出预览 sheet（应用缩放/旋转/平移、时间显示）
+    /// 生成预览图并弹出预览 sheet（与对比区域所见一致：缩放/旋转/平移后裁剪，用 ImageRenderer 渲染）
     private func generateAndShowPreview() {
         guard let left = leftPhoto, let right = rightPhoto else { return }
         isSavingCompare = true
-        Task {
-            let leftImage = left.loadImage()
-            let rightImage = right.loadImage()
+        // 捕获当前状态，避免后台闭包引用 self
+        let ls = leftScale, la = leftAngle, lo = leftOffset
+        let rs = rightScale, ra = rightAngle, ro = rightOffset
+        let ll = showDateLabels ? leftDateLabel : nil
+        let rl = showDateLabels ? rightDateLabel : nil
+        // 在主线程取出文件路径，后台线程读文件数据，避免 actor 隔离问题
+        let leftPath = left.filePath
+        let rightPath = right.filePath
+        Task.detached(priority: .userInitiated) {
+            let leftImage = _loadImageFromPath(leftPath)
+            let rightImage = _loadImageFromPath(rightPath)
             await MainActor.run {
                 isSavingCompare = false
                 guard let l = leftImage, let r = rightImage else {
                     saveCompareAlert = .failure(String(localized: "无法加载照片"))
                     return
                 }
-                let leftTransformed = CompareImageService.transformImage(l, scale: leftScale, angleDegrees: leftAngle, offset: leftOffset)
-                let rightTransformed = CompareImageService.transformImage(r, scale: rightScale, angleDegrees: rightAngle, offset: rightOffset)
-                guard let lt = leftTransformed, let rt = rightTransformed else {
-                    saveCompareAlert = .failure(String(localized: "应用变换失败"))
-                    return
-                }
-                let leftLabel = showDateLabels ? "Before \(left.formattedDate)" : nil
-                let rightLabel = showDateLabels ? "After \(right.formattedDate)" : nil
-                guard let composite = CompareImageService.composite(left: lt, right: rt, leftLabel: leftLabel, rightLabel: rightLabel) else {
+                let content = ExportCompareAreaView(
+                    leftImage: l,
+                    rightImage: r,
+                    leftScale: ls,
+                    leftAngle: la,
+                    leftOffset: lo,
+                    rightScale: rs,
+                    rightAngle: ra,
+                    rightOffset: ro,
+                    leftLabel: ll,
+                    rightLabel: rl
+                )
+                let renderer = ImageRenderer(content: content)
+                renderer.scale = 1
+                if let rendered = renderer.uiImage {
+                    previewImage = rendered
+                } else {
                     saveCompareAlert = .failure(String(localized: "生成对比图失败"))
-                    return
                 }
-                previewImage = composite
             }
         }
     }
 
+    // 图片加载使用模块级函数 _loadImageFromPath，避免 MainActor 隔离
+
     /// 预览 sheet：展示生成的对比图，支持「保存到相册」或「取消」
     private func comparePreviewSheet(image: UIImage) -> some View {
         NavigationStack {
-            ScrollView {
+            VStack(spacing: 16) {
+                Spacer().frame(maxHeight: 40)
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
-                    .padding()
+                    .padding(.horizontal, 20)
+                    .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 2)
+                Text("导出效果预览")
+                    .font(.caption)
+                    .foregroundStyle(Color.kiroku.textSecondary)
+                Spacer()
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.kiroku.background)
             .navigationTitle("预览")
             .navigationBarTitleDisplayMode(.inline)
@@ -302,10 +360,13 @@ struct CompareView: View {
                     .foregroundStyle(Color.kiroku.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存到相册") {
+                    Button {
                         savePreviewToLibrary(image)
                         previewImage = nil
+                    } label: {
+                        Image(systemName: "square.and.arrow.down")
                     }
+                    .accessibilityLabel(Text("保存到相册"))
                     .foregroundStyle(Color.kiroku.primary)
                 }
             }
@@ -318,14 +379,25 @@ struct CompareView: View {
         }
     }
 
+    /// 互换左右照片（连同缩放/旋转/平移/日期标签一起交换）
+    private func swapPhotos() {
+        swap(&leftPhoto, &rightPhoto)
+        swap(&leftScale, &rightScale)
+        swap(&leftAngle, &rightAngle)
+        swap(&leftOffset, &rightOffset)
+        swap(&leftDateLabel, &rightDateLabel)
+    }
+
     /// 选择照片
     private func selectPhoto(_ photo: Photo) {
         guard let side = selectingForSide else {
             // 如果没有选中任何一边，默认先选左边
             if leftPhoto == nil {
                 leftPhoto = photo
+                leftDateLabel = photo.formattedDate
             } else if rightPhoto == nil {
                 rightPhoto = photo
+                rightDateLabel = photo.formattedDate
             }
             return
         }
@@ -336,24 +408,116 @@ struct CompareView: View {
             leftScale = 1.0
             leftAngle = 0
             leftOffset = .zero
+            leftDateLabel = photo.formattedDate
         case .right:
             rightPhoto = photo
             rightScale = 1.0
             rightAngle = 0
             rightOffset = .zero
+            rightDateLabel = photo.formattedDate
         }
         
         selectingForSide = nil
     }
 }
 
-// MARK: - 可编辑对比图图片（双指缩放、旋转、平移）
+// MARK: - 导出用对比区域（与屏幕一致：scale/rotation/offset 后裁剪，用 ImageRenderer 渲染）
+
+private struct ExportCompareAreaView: View {
+    let leftImage: UIImage
+    let rightImage: UIImage
+    let leftScale: CGFloat
+    let leftAngle: Double
+    let leftOffset: CGSize
+    let rightScale: CGFloat
+    let rightAngle: Double
+    let rightOffset: CGSize
+    let leftLabel: String?
+    let rightLabel: String?
+
+    private static let contentWidth: CGFloat = 1600
+    /// 导出图四周留白，与预览所见一致
+    private static let edgePadding: CGFloat = 48
+    private static let totalWidth: CGFloat = contentWidth + edgePadding * 2
+    private static let spacing: CGFloat = 2
+    private static let cellWidth = (contentWidth - spacing) / 2
+    private static let imageAspectRatio: CGFloat = 3 / 4
+    private static let imageAreaHeight = cellWidth / imageAspectRatio
+    private static let cornerRadius = cellWidth * 12 / 200
+    /// 与对比视图一致：日期 18pt、VStack spacing 8；导出按栏宽同比例放大
+    private static let typicalCellWidthOnScreen: CGFloat = 200
+    private static let labelFontSizeOnScreen: CGFloat = 18
+    private static let labelSpacingOnScreen: CGFloat = 8
+    private static let labelHeightOnScreen: CGFloat = 28
+    private static var labelScale: CGFloat { cellWidth / typicalCellWidthOnScreen }
+    private static var labelFontSize: CGFloat { labelFontSizeOnScreen * labelScale }
+    private static var labelSpacing: CGFloat { labelSpacingOnScreen * labelScale }
+    private static var labelHeight: CGFloat { labelHeightOnScreen * labelScale }
+
+    var body: some View {
+        let hasLabels = (leftLabel.map { !$0.isEmpty } ?? false) || (rightLabel.map { !$0.isEmpty } ?? false)
+        let contentHeight = Self.imageAreaHeight + (hasLabels ? Self.labelSpacing + Self.labelHeight : 0)
+        let canvasHeight = contentHeight + Self.edgePadding * 2
+
+        ZStack {
+            Color.kiroku.background
+            VStack(spacing: 0) {
+                HStack(spacing: Self.spacing) {
+                    exportCell(image: leftImage, scale: leftScale, angle: leftAngle, offset: leftOffset)
+                    exportCell(image: rightImage, scale: rightScale, angle: rightAngle, offset: rightOffset)
+                }
+                if hasLabels {
+                    HStack(alignment: .top, spacing: Self.spacing) {
+                        if let leftLabel = leftLabel, !leftLabel.isEmpty {
+                            Text(leftLabel)
+                                .font(.system(size: Self.labelFontSize, weight: .medium))
+                                .foregroundStyle(Color.kiroku.textSecondary)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                        if let rightLabel = rightLabel, !rightLabel.isEmpty {
+                            Text(rightLabel)
+                                .font(.system(size: Self.labelFontSize, weight: .medium))
+                                .foregroundStyle(Color.kiroku.textSecondary)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                    }
+                    .padding(.top, Self.labelSpacing)
+                    .frame(height: Self.labelHeight)
+                }
+            }
+            .frame(width: Self.contentWidth)
+        }
+        .frame(width: Self.totalWidth, height: canvasHeight)
+    }
+
+    private func exportCell(image: UIImage, scale: CGFloat, angle: Double, offset: CGSize) -> some View {
+        // offset 是屏幕坐标（约 200pt 栏宽），导出图栏宽约 800pt，需按同比例放大
+        let s = Self.labelScale
+        return ZStack {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
+                .frame(width: Self.cellWidth, height: Self.imageAreaHeight)
+                .scaleEffect(scale)
+                .rotationEffect(.degrees(angle))
+                .offset(x: offset.width * s, y: offset.height * s)
+        }
+        .frame(width: Self.cellWidth, height: Self.imageAreaHeight)
+        .clipped()
+        .clipShape(RoundedRectangle(cornerRadius: Self.cornerRadius))
+    }
+}
+
+// MARK: - 可编辑对比图图片（双指缩放、旋转、平移；拖到对侧互换）
 
 private struct EditableCompareImageView: View {
     let fileName: String
     @Binding var scale: CGFloat
     @Binding var angle: Double
     @Binding var offset: CGSize
+
+    /// 拖到另一侧框位置时调用，由外部执行互换
+    var onHorizontalSwipe: (() -> Void)?
 
     @GestureState private var magnifyBy: CGFloat = 1.0
     @GestureState private var rotationDelta: Angle = .zero
@@ -394,12 +558,32 @@ private struct EditableCompareImageView: View {
                     .simultaneousGesture(
                         DragGesture()
                             .updating($dragOffset) { value, state, _ in state = value.translation }
-                            .onEnded { value in offset.width += value.translation.width; offset.height += value.translation.height }
+                            .onEnded { value in
+                                if scale <= 1.05 {
+                                    // 未放大：拖到另一侧框位置（水平位移超过半个栏宽）→ 互换
+                                    // 不提交 offset，GestureState 自动归零 → 图片弹回原位
+                                    if abs(value.translation.width) > size.width * 0.5 {
+                                        onHorizontalSwipe?()
+                                    }
+                                } else {
+                                    // 已放大：提交拖拽位移用于平移
+                                    offset.width += value.translation.width
+                                    offset.height += value.translation.height
+                                }
+                            }
                     )
             }
         }
         .aspectRatio(3/4, contentMode: .fit)
     }
+}
+
+// MARK: - 后台图片加载（nonisolated，不受 MainActor 约束）
+
+/// 从文件路径加载图片，供 Task.detached 安全调用
+private nonisolated func _loadImageFromPath(_ path: URL) -> UIImage? {
+    guard let data = try? Data(contentsOf: path) else { return nil }
+    return UIImage(data: data)
 }
 
 #Preview {

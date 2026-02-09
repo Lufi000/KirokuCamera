@@ -206,33 +206,39 @@ struct PhotoGridCell: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            ZStack(alignment: .topLeading) {
-                AsyncPhotoImage.fullSize(fileName: photo.fileName)
-                    .aspectRatio(3/4, contentMode: .fill)
-                    .clipped()
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                if isCover {
-                    Text("封面")
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(Color.kiroku.textPrimary)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
-                        .background(
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(.ultraThinMaterial)
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(Color.kiroku.background.opacity(0.65))
-                            }
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(Color.kiroku.glassBorder.opacity(0.8), lineWidth: 0.5)
-                        )
-                        .padding(6)
+            // 用透明占位固定 3:4，图片 overlay 填满并裁切，避免长图撑高
+            Color.clear
+                .aspectRatio(3/4, contentMode: .fit)
+                .frame(maxWidth: .infinity)
+                .overlay(alignment: .topLeading) {
+                    AsyncPhotoImage.fullSize(fileName: photo.fileName, contentMode: .fill)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .clipped()
                 }
-            }
+                .overlay(alignment: .topLeading) {
+                    if isCover {
+                        Text("封面")
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(Color.kiroku.textPrimary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .fill(.ultraThinMaterial)
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .fill(Color.kiroku.background.opacity(0.65))
+                                }
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(Color.kiroku.glassBorder.opacity(0.8), lineWidth: 0.5)
+                            )
+                            .padding(6)
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             Text(photo.formattedDate)
                 .font(.caption2)
                 .foregroundStyle(Color.kiroku.textSecondary)
@@ -266,9 +272,9 @@ struct PhotoTimelineCard: View {
             }
 
             ZStack(alignment: .topLeading) {
-                AsyncPhotoImage.fullSize(fileName: photo.fileName)
-                    .aspectRatio(3/4, contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                AsyncPhotoImage.fullSize(fileName: photo.fileName, contentMode: .fill)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
                 if isCover {
                     Text("封面")
                         .font(.caption2.weight(.medium))
@@ -291,6 +297,9 @@ struct PhotoTimelineCard: View {
                         .padding(8)
                 }
             }
+            .frame(maxWidth: .infinity)
+            .aspectRatio(3/4, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
         .padding(16)
         .background(

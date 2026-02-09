@@ -9,9 +9,12 @@ final class HomeHostViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 立即设置背景色，避免数据加载期间黑屏
+        view.backgroundColor = UIColor(red: 250/255, green: 237/255, blue: 216/255, alpha: 1)
         guard let dataStore = dataStore else { return }
         let homeView = HomeView().environmentObject(dataStore)
         let hosting = UIHostingController(rootView: homeView)
+        hosting.view.backgroundColor = UIColor(red: 250/255, green: 237/255, blue: 216/255, alpha: 1)
         addChild(hosting)
         view.addSubview(hosting.view)
         hosting.view.translatesAutoresizingMaskIntoConstraints = false

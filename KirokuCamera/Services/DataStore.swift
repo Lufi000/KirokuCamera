@@ -11,6 +11,7 @@ struct AppData: Codable {
 final class DataStore: ObservableObject {
     @Published private(set) var subjects: [Subject] = []
     @Published private(set) var photos: [Photo] = []
+    @Published private(set) var isLoading: Bool = true
 
     private let fileURL: URL
     private let queue = DispatchQueue(label: "com.kirokucamera.datastore")
@@ -26,12 +27,15 @@ final class DataStore: ObservableObject {
     private func load() {
         queue.async { [weak self] in
             guard let self = self else { return }
+            // 文件 I/O 在后台线程
             let rawData = try? Data(contentsOf: self.fileURL)
             DispatchQueue.main.async {
+                // JSON 解码在主线程（满足 Swift 6 MainActor 隔离要求）
                 if let d = rawData, let decoded = try? JSONDecoder().decode(AppData.self, from: d) {
                     self.subjects = decoded.subjects
                     self.photos = decoded.photos
                 }
+                self.isLoading = false
             }
         }
     }
