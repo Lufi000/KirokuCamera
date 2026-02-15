@@ -108,7 +108,7 @@ struct HomeView: View {
                     .multilineTextAlignment(.center)
             }
 
-            Button("开始拍照") {
+            Button(String(localized: "Continue")) {
                 showingCamera = true
             }
             .buttonStyle(.kirokuPrimary)

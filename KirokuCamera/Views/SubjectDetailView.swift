@@ -138,7 +138,7 @@ struct SubjectDetailView: View {
                     .multilineTextAlignment(.center)
             }
 
-            Button("开始拍摄") {
+            Button(String(localized: "Continue")) {
                 showingCamera = true
             }
             .buttonStyle(.kirokuPrimary)

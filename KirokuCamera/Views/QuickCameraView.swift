@@ -41,8 +41,8 @@ struct QuickCameraView: View {
                 bottomControls
             }
             
-            // 权限被拒绝提示
-            if !cameraManager.isAuthorized && cameraManager.isCameraReady == false {
+            // 仅在用户已拒绝相机权限时展示说明与「打开设置」入口（不在 notDetermined 时展示，避免在系统权限弹窗前出现带按钮的引导，符合 Guideline 5.1.1）
+            if cameraManager.authorizationState == .denied {
                 permissionDeniedView
             }
         }
@@ -315,22 +315,23 @@ struct QuickCameraView: View {
         .presentationDetents([.medium])
     }
     
-    /// 权限被拒绝视图
+    /// 权限已拒绝时的说明视图：仅告知功能需要相机，并提供前往系统设置的入口（符合审核：在用户已拒绝后再提供链接到 Settings）
     private var permissionDeniedView: some View {
         VStack(spacing: 16) {
             Image(systemName: "camera.fill")
                 .font(.system(size: 48))
                 .foregroundStyle(.white.opacity(0.6))
-            
-            Text("需要相机权限")
+
+            Text("相机功能需要访问相机")
                 .font(.headline)
                 .foregroundStyle(.white)
-            
-            Text("请在设置中允许访问相机")
+
+            Text("若您此前已关闭权限，可在「设置」中重新开启。")
                 .font(.subheadline)
                 .foregroundStyle(.white.opacity(0.7))
-            
-            Button("打开设置") {
+                .multilineTextAlignment(.center)
+
+            Button(String(localized: "Continue")) {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
                 }

@@ -24,6 +24,16 @@
     "%lld%%" : {
 
     },
+    "Continue" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续"
+          }
+        }
+      }
+    },
     "Select %@" : {
 
     },
@@ -322,6 +332,7 @@
       }
     },
     "开始拍摄" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -332,6 +343,7 @@
       }
     },
     "开始拍照" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -521,6 +533,9 @@
         }
       }
     },
+    "相机功能需要访问相机" : {
+
+    },
     "确定" : {
       "localizations" : {
         "en" : {
@@ -571,6 +586,9 @@
         }
       }
     },
+    "若您此前已关闭权限，可在「设置」中重新开启。" : {
+
+    },
     "记录项名称" : {
       "localizations" : {
         "en" : {
@@ -602,6 +620,7 @@
       }
     },
     "请在设置中允许访问相机" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -712,6 +731,7 @@
       }
     },
     "需要相机权限" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

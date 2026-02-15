@@ -2,37 +2,54 @@ import AVFoundation
 import UIKit
 import Combine
 
+/// 相机权限状态（用于 UI：仅在「已拒绝」时展示前往设置的说明，不在「未决定」时展示自定义按钮，符合 App Review 5.1.1）
+enum CameraAuthorizationState {
+    case notDetermined  // 尚未请求，或系统弹窗尚未返回
+    case authorized
+    case denied        // 用户拒绝或系统限制
+}
+
 /// 相机管理器：处理相机会话和拍照
 final class CameraManager: NSObject, ObservableObject {
     @Published var isAuthorized = false
     @Published var isCameraReady = false
     @Published var currentPosition: AVCaptureDevice.Position = .back
-    
+    /// 供 UI 区分「未决定」与「已拒绝」：仅当 denied 时展示「打开设置」等说明，避免在系统权限弹窗前展示带按钮的引导
+    @Published private(set) var authorizationState: CameraAuthorizationState = .notDetermined
+
     let session = AVCaptureSession()
     private let output = AVCapturePhotoOutput()
     private var currentInput: AVCaptureDeviceInput?
     private var photoCaptureCompletion: ((UIImage?) -> Void)?
-    
+
     private let sessionQueue = DispatchQueue(label: "camera.session.queue")
-    
+
     // MARK: - 权限检查
-    
-    /// 检查权限并设置相机
+
+    /// 检查权限并设置相机（不展示任何自定义权限 UI，由系统弹窗负责首次请求）
     func checkPermissionAndSetup() {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        switch status {
         case .authorized:
+            authorizationState = .authorized
             isAuthorized = true
             setupCamera()
         case .notDetermined:
+            authorizationState = .notDetermined
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
                 DispatchQueue.main.async {
+                    self?.authorizationState = granted ? .authorized : .denied
                     self?.isAuthorized = granted
                     if granted {
                         self?.setupCamera()
                     }
                 }
             }
-        default:
+        case .denied, .restricted:
+            authorizationState = .denied
+            isAuthorized = false
+        @unknown default:
+            authorizationState = .denied
             isAuthorized = false
         }
     }
