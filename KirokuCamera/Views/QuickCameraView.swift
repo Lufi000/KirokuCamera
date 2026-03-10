@@ -154,12 +154,11 @@ struct QuickCameraView: View {
                 if showOverlay, let refImage = referenceImage {
                     Image(uiImage: refImage)
                         .resizable()
-                        .scaledToFill()
+                        .scaledToFit()
                         .frame(
                             width: geometry.size.width,
                             height: geometry.size.height
                         )
-                        .clipped()
                         .opacity(overlayOpacity)
                         .allowsHitTesting(false)
                 }
@@ -362,6 +361,12 @@ struct QuickCameraView: View {
         }
         let photo = Photo(fileName: fileName, subjectId: subject.id, takenAt: date)
         dataStore.addPhoto(photo)
+        // 同时保存一份到系统相册（失败不影响 app 内保存流程）
+        CompareImageService.saveToPhotoLibrary(image) { success, _ in
+            if !success {
+                print("保存到系统相册失败")
+            }
+        }
         capturedImage = nil
         selectedDate = Date()
         dismiss()

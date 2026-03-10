@@ -26,6 +26,12 @@
     },
     "Continue" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -33,9 +39,6 @@
           }
         }
       }
-    },
-    "Select %@" : {
-
     },
     "今天" : {
       "localizations" : {
@@ -211,6 +214,7 @@
       }
     },
     "双指缩放或旋转，点击更换照片" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -261,6 +265,7 @@
       }
     },
     "对比照片" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -271,6 +276,7 @@
       }
     },
     "导出效果预览" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -404,6 +410,7 @@
       }
     },
     "无法加载照片" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -504,6 +511,7 @@
       }
     },
     "生成对比图失败" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

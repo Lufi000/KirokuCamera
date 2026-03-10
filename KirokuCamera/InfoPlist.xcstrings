@@ -7,25 +7,24 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kiroku Camera"
+            "value" : "对比相机"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kiroku Camera"
+            "value" : "对比相机"
           }
         }
       }
     },
     "CFBundleName" : {
       "comment" : "Bundle name",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "KirokuCamera"
+            "state" : "translated",
+            "value" : "对比相机"
           }
         }
       }

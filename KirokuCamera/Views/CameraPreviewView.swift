@@ -60,7 +60,7 @@ final class CameraPreviewUIView: UIView {
         guard let session = session else { return }
         
         let layer = AVCaptureVideoPreviewLayer(session: session)
-        layer.videoGravity = .resizeAspectFill
+        layer.videoGravity = .resizeAspect
         layer.frame = bounds
         
         self.layer.addSublayer(layer)
