@@ -5,6 +5,7 @@ struct ComparePreviewView: View {
     @Environment(\.dismiss) private var dismiss
     let previewImage: UIImage
     @State private var saveResult: SaveResult?
+    @State private var showingShareSheet = false
 
     enum SaveResult: Identifiable {
         case success
@@ -45,24 +46,45 @@ struct ComparePreviewView: View {
 
                 Spacer()
 
-                Button {
-                    saveToPhotoLibrary()
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "square.and.arrow.down")
-                            .font(.system(size: 17, weight: .semibold))
-                        Text("保存到相册")
-                            .font(.system(size: 17, weight: .semibold))
+                HStack(spacing: 12) {
+                    Button {
+                        saveToPhotoLibrary()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "square.and.arrow.down")
+                                .font(.system(size: 17, weight: .semibold))
+                            Text("保存到相册")
+                                .font(.system(size: 17, weight: .semibold))
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color.kiroku.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(Color.kiroku.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                    Button {
+                        showingShareSheet = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 17, weight: .semibold))
+                            Text("分享")
+                                .font(.system(size: 17, weight: .semibold))
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color.kiroku.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 16)
             }
+        }
+        .sheet(isPresented: $showingShareSheet) {
+            ShareSheet(activityItems: [previewImage])
         }
         .alert(item: $saveResult) { result in
             Alert(

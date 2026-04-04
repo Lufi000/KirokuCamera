@@ -166,6 +166,8 @@ struct CompareView: View {
                         ? CGSize(width: (contentW - spacing) / 2, height: contentH)
                         : CGSize(width: contentW, height: (contentH - spacing) / 2)
 
+                    // 防止 GeometryReader 首次渲染时尺寸为零导致负值
+                    if cellSize.width > 0 && cellSize.height > 0 {
                     ZStack {
                         Color.kiroku.background
                         Group {
@@ -182,6 +184,7 @@ struct CompareView: View {
                             }
                         }
                         .padding(edgePad)
+                    }
                     }
                 }
             }

@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 /// 相册列表展示方式
 enum HomeListViewMode: String, CaseIterable {
@@ -52,6 +53,20 @@ struct HomeView: View {
                 }
             }
             .navigationTitle("相册列表")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Menu {
+                        Button {
+                            requestAppReview()
+                        } label: {
+                            Label("给我们评分", systemImage: "star.bubble")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .foregroundStyle(Color.kiroku.primary)
+                    }
+                }
+            }
             .toolbarBackground(.regularMaterial, for: .navigationBar)
             .fullScreenCover(isPresented: $showingCamera) {
                 QuickCameraView()
@@ -267,6 +282,13 @@ struct HomeView: View {
         subjectToRename = subject
         renameText = subject.name
         showingRenameAlert = true
+    }
+
+    private func requestAppReview() {
+        if let windowScene = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+            SKStoreReviewController.requestReview(in: windowScene)
+        }
     }
 
     private func applyRename() {
